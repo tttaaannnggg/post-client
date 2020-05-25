@@ -1,0 +1,11 @@
+.App {
+  text-align: center;
+}
+
+textArea{
+  height:auto;
+  width: 80vw;
+  min-height: 80vh;
+  max-width: 800px;
+}
+
