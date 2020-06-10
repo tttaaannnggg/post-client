@@ -29,7 +29,7 @@ function App() {
           if(!text.length || postState){
             return;
           }
-          const data = {body: text, pass:passVal, title:title, author: 'tang'}
+          const data = {body: text, pass:passVal, title:title, author: 'tang', id:Number(postId)}
           localStorage.setItem('lastPost', JSON.stringify(data));
           setText('');
           submitPost(data, {get:postState, set:setPostState})
