@@ -12,39 +12,45 @@ function App() {
   const [postSelection, setPostSelection] = useState(0);
   return (
     <div className="App">
-      <div>
-        <p>{postId === 0 || postId === '0' ? 'new post' : 'editing post ' +postId}</p>
-      </div>
-      <div>
-        <EditSelector setMaxPost={setMaxPost} maxPost={maxPost} postSelection={postSelection} setPostSelection={setPostSelection} />
-        <button onClick={()=>{getPost(postSelection,{setText, setTitle, setPostId})}}>edit post</button>
-      </div>
-      <div>
-        <input type="password" placeholder='password' value={passVal} onChange={
-          (e)=>{
-            setPassVal(e.target.value)
-          }
-        }></input> 
-        <button onClick={()=>{
-          if(!text.length || postState){
-            return;
-          }
-          const data = {body: text, pass:passVal, title:title, author: 'tang', id:Number(postId)}
-          localStorage.setItem('lastPost', JSON.stringify(data));
-          setText('');
-          submitPost(data, {get:postState, set:setPostState})
-        }}>
-          submit post
-        </button>
-      </div>
-      <div>
-        <input placeholder='title' value={title}onChange={
+      <div className="header">
+        <input placeholder='title' className="Editor-Title" value={title}onChange={
           (e)=>{
             setTitle(e.target.value);
           }
         }></input>
+        <div className="Editor-Cluster">
+          <p className="Editor-Post-Indicator">{postId === 0 || postId === '0' ? 'new post' : 'editing post ' +postId}</p>
+          <div>
+          <EditSelector setMaxPost={setMaxPost} maxPost={maxPost} postSelection={postSelection} setPostSelection={setPostSelection} />
+          <button onClick={()=>{getPost(postSelection,{setText, setTitle, setPostId})}}>edit post</button>
+        </div>
+        <div>
+          <input className="Editor-Input" type="password" placeholder='password' value={passVal} onChange={
+            (e)=>{
+              setPassVal(e.target.value)
+            }
+          }></input> 
+          <button onClick={()=>{
+            if(!text.length || postState || !passVal){
+              return;
+            }
+            const data = {body: text, pass:passVal, title:title, author: 'tang', id:Number(postId)}
+            localStorage.setItem('lastPost', JSON.stringify(data));
+            submitPost(data, {get:postState, set:setPostState}).then(res=>{
+              if(res.ok){
+                console.log('posted')
+                setText('');
+              }else{
+                console.log('failed to post')
+              }
+          })
+        }}>
+            submit post
+          </button>
+        </div>
       </div>
-      <textarea rows="50" value={text} onChange={
+    </div>
+      <textarea className="Editor-Body" rows="50" value={text} onChange={
         (e)=>{
           setText(e.target.value);
         }
@@ -71,7 +77,7 @@ function EditSelector(props){
     selections.push(<option value={i} key={'option' + i}>{i}</option>)
   }
   selections.push(<option value={0} key='new' >new</option>)
-  return(<select defaultValue={0} onChange={(e)=>{setPostSelection(e.target.value)}}>
+  return(<select className="Editor-Input" defaultValue={0} onChange={(e)=>{setPostSelection(e.target.value)}}>
     {selections}
     </select>)
 }
@@ -80,7 +86,7 @@ function submitPost(data, postStatus){
   postStatus.set(true);
   const destination = `${url}/api/posts/${data.id ||''}`;
   console.log('submitting to', destination)
-  fetch(destination, {
+  return fetch(destination, {
     method: 'POST',
     mode: 'cors',
     body: JSON.stringify(data),
@@ -91,6 +97,7 @@ function submitPost(data, postStatus){
   .then(res=>{
     console.log('sent!')
     setTimeout(()=>postStatus.set(false), 1000);
+    return res;
   })
 } 
 
