@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import './App.css';
-const url = 'http://34.226.241.143';
+const url = 'https://ttaanngg.com';
 
 function App() {
   const [passVal, setPassVal] = useState('');
